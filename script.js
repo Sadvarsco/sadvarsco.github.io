@@ -58,17 +58,6 @@ function resetSelection() {
     });
 }
 
-/* function resetSelection() {
-    // Clear the selectedCharacters array
-    selectedCharacters = [];
-
-    // Remove all added classes from characters
-    document.querySelectorAll('.character').forEach(char => {
-        char.classList.remove('selected', 'grayed-out', 'unselectable');
-    });
-} */
-
-
 function sortCharacters() {
     const container = document.querySelector('.character-select-container');
     let characters = Array.from(container.children);
@@ -83,3 +72,11 @@ function sortCharacters() {
     characters.forEach(char => container.appendChild(char));
 }
 
+//
+function openModal() {
+    document.getElementById('infoModal').style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('infoModal').style.display = 'none';
+}
