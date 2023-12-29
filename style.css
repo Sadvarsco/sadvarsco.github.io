@@ -116,6 +116,7 @@ body {
 }
 
 .close-button {
+    padding: 10px 20px;
     color: #aaa;
     float: right;
     font-size: 28px;
@@ -124,6 +125,7 @@ body {
 
 .close-button:hover,
 .close-button:focus {
+    padding: 10px 20px;
     color: black;
     text-decoration: none;
     cursor: pointer;
