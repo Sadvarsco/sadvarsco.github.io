@@ -9,9 +9,6 @@
 <body>
 
     <div class="top-container">
-        <div class="text-box-container">
-            <input type="text" id="textBox" placeholder="Enter text here">
-        </div>
         <div class="logo-container">
             <img src="images/logo_large.png" alt="LogoMM">
             <img src="images/Heroes_of_the_Storm_BlizzHeroes_2017_logo.png" alt="LogoHOTS">
@@ -21,14 +18,14 @@
     <div id="infoModal" class="modal">
         <div class="modal-content">
             <span class="close-button" onclick="closeModal()">&times;</span>
-            <h2>Information</h2>
-            <p>Quick Simple Metamadness selection screen to help see who is and isn't available for hero selection.</p>
-            <p>How does it work:</p>
+            <h2>MetaMadness Selection Screen</h2>
+            <h5>To help see who is and isn't available for hero selection.</h5>
+            <p><b>How does it work:</b></p>
             <ul>
-                <li>The first 20 heroes selected will be considered 'Pre-banned'. Those heroes will then be grayed out.</li>
+                <li>The first 20 heroes selected will be considered 'Pre-banned'. After 20 heroes are selected, they will be grayed out.</li>
                 <li>Every Hero selected after the 'Pre-banned' should be considered "In-Game heroes picks" for the match. They will turn Red and be unselectable.</li>
                 <li>Hitting the "Hide Banned/Picked" Button will move all "Pre-banned" and "In-Game Hero picks" to the bottom of the list.</li>
-                <li>Hitting reset will basically refresh the page back to a default.</li>
+                <li>Hitting reset will refresh the page back to a default state.</li>
             </ul>
             <p>NOTE: The Heroes are mostly in alphabetical order (mostly grouped by letter). Cho and Gall are currently considered 2 separate Heroes.</p>
         </div>
