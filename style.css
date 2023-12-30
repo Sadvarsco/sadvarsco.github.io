@@ -130,3 +130,35 @@ body {
     text-decoration: none;
     cursor: pointer;
 }
+
+
+.hexagon {
+    width: 100px; /* Adjust as needed */
+    height: 100px; /* Adjust as needed */
+    position: relative;
+    clip-path: circle(40%);
+    overflow: hidden;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5); /* Slight shadow */
+}
+
+.hexagon::before {
+    content: '';
+    position: absolute;
+    top: -10px; /* Adjust thickness */
+    left: -10px; /* Adjust thickness */
+    right: -10px; /* Adjust thickness */
+    bottom: -10px; /* Adjust thickness */
+    z-index: -1;
+    clip-path: circle(40%);
+    background: silver; /* Border color */
+}
+
+.hoverable-element {
+    /* Your regular styles here (size, color, etc.) */
+    transition: border 0.3s ease; /* Optional: for smooth transition */
+}
+
+.hoverable-element:hover {
+    border: 3px solid yellow; /* Adjust the border width and style as needed */
+}
+
