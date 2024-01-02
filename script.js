@@ -27,7 +27,7 @@ function selectCharacter(characterId) {
         document.getElementById(characterId).classList.add('selected');
 
         // Gray out the first 10 selected characters
-        if (selectedCharacters.length === 20) {
+        if (selectedCharacters.length === 18) {
             document.querySelectorAll('.character').forEach(char => {
                 if (selectedCharacters.includes(char.id)) {
                     char.classList.add('grayed-out');
@@ -36,7 +36,7 @@ function selectCharacter(characterId) {
         }
 
         // Make the next 5 selected characters unselectable
-        if (selectedCharacters.length > 20 && selectedCharacters.length <= 70) {
+        if (selectedCharacters.length > 18 && selectedCharacters.length <= 68) {
             document.getElementById(characterId).classList.add('unselectable');
         }
     }
