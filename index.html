@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    Thank you Khaldor for your support
 
     <div class="top-container">
         <div class="logo-container">
@@ -22,10 +23,10 @@
             <h5>To help see who is and isn't available for hero selection.</h5>
             <p><strong>How does it work:</strong></p>
             <ul>
-                <li>The first 18 Heroes selected will be considered <em>'Pre-banned'</em>. After 18 Heroes are selected, they will be grayed out.</li>
+                <li>Pick number of <em>'Pre-banned'</em> heroes. Once you reach the number of <em>'Pre-banned'</em> Heroes, they will be grayed out.</li>
                 <li>Every Hero selected after the <em>'Pre-banned'</em> should be considered <em>"In-Game Hero Picks"</em> for the match. They will turn Red and be unselectable.</li>
                 <li>Hitting the "Hide Banned/Picked" Button will move all <em>'Pre-banned'</em> and <em>"In-Game Hero Picks"</em> to the bottom of the list.</li>
-                <li>Hitting reset will refresh the page back to a default state.</li>
+                <li>Hitting reset or changing the number of <em>'Pre-banned'</em> will refresh the page back to a default state.</li>
             </ul>
             <p>NOTE: The Heroes are mostly in alphabetical order (mostly grouped by letter). Cho and Gall are currently considered 2 separate Heroes.</p>
         </div>
@@ -35,6 +36,10 @@
         <button id="infoButton" onclick="openModal()">How it works</button>
         <button id="resetButton" onclick="resetSelection()">Reset Selection</button>
         <button id="sortButton" onclick="sortCharacters()">Hide Banned/Picked</button>
+        <div class="settings-container">
+            <label for="grayOutCount">Number of Characters Prebanned:</label>
+            <select id="grayOutCount" onchange="updateGrayOutCount()"></select>
+        </div>
     </div>
 
     <div class="character-select-container">
