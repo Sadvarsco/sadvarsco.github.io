@@ -40,20 +40,6 @@ function selectCharacter(characterId) {
                     }
                 });
             }
-    // if (selectedCharacters.length < 90 && !selectedCharacters.includes(characterId)) {
-    //     selectedCharacters.push(characterId);
-    //     document.getElementById(characterId).classList.add('selected');
-
-        // // Gray out the first 10 selected characters
-        // if (selectedCharacters.length === 18) {
-        //     document.querySelectorAll('.character').forEach(char => {
-        //         if (selectedCharacters.includes(char.id)) {
-        //             char.classList.add('grayed-out');
-        //         }
-        //     });
-        // }
-
-        // Make the next 5 selected characters unselectable
         if (selectedCharacters.length > grayOutLimit && selectedCharacters.length <= 90) {
             document.getElementById(characterId).classList.add('unselectable');
         }
@@ -76,6 +62,7 @@ function resetSelection() {
     });
 }
 
+//moves unselectable characters to the buttom/back of the list
 function sortCharacters() {
     const container = document.querySelector('.character-select-container');
     let characters = Array.from(container.children);
@@ -90,7 +77,7 @@ function sortCharacters() {
     characters.forEach(char => container.appendChild(char));
 }
 
-//
+//Pop up box instructions
 function openModal() {
     document.getElementById('infoModal').style.display = 'block';
 }
@@ -99,9 +86,7 @@ function closeModal() {
     document.getElementById('infoModal').style.display = 'none';
 }
 
-// ... existing JavaScript ...
-
-// Function to populate the dropdown
+//create a dropdown list, currently 20 is the max
 function populateDropdown() {
     const dropdown = document.getElementById('grayOutCount');
     for (let i = 1; i <= 20; i++) {
@@ -111,8 +96,7 @@ function populateDropdown() {
     }
 }
 
-// Call the function to populate the dropdown when the page loads
+//populates dropdown list on page load
 populateDropdown();
 
-// ... rest of your JavaScript ...
 

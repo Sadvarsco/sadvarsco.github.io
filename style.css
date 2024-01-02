@@ -6,28 +6,28 @@ body {
     background-image: url('images/background.jpg');
     background-size: cover; /* Cover the entire page */
     background-position: center; /* Center the image */
-    background-repeat: no-repeat; /* Do not repeat the image */
+    background-repeat: no-repeat; 
         
 }
 
 .logo-container {
-    text-align: center; /* Center the logo image */
-    margin-bottom: 20px; /* Space between the logo and the button */
+    text-align: center; 
+    margin-bottom: 20px; 
 }
 
 .logo-container img {
-    width: 150px; /* Adjust the size as needed */
-    height: auto; /* Maintain aspect ratio */
+    width: 150px; 
+    height: auto; 
 }
 .grayed-out {
     opacity: 0.4;
-    pointer-events: none; /* Prevent further clicks */
+    pointer-events: none; 
 }
 
 .unselectable {
     opacity: 0.6;
-    pointer-events: none; /* Prevent further clicks */
-    background-color: #ff0000 !important; /* Optional: change background to indicate unselectability */
+    pointer-events: none; 
+    background-color: #ff0000 !important; 
 }
 
 .header-title-logo img {
@@ -102,7 +102,7 @@ body {
     cursor: pointer;
 }
 
-/* Modal styles */
+/* Popup info block */
 .modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
@@ -118,12 +118,13 @@ body {
 
 .modal-content {
     background-color: #fefefe;
-    margin: 15% auto; /* 15% from the top and centered */
+    margin: 15% auto; 
     padding: 20px;
     border: 1px solid #888;
-    width: 80%; /* Could be more or less, depending on screen size */
-    text-align: left; /* Align text to the left */
+    width: 80%; 
+    text-align: left; 
 }
+/* Popup info block end*/
 
 .close-button {
     padding: 10px 20px;
@@ -141,7 +142,7 @@ body {
     cursor: pointer;
 }
 
-
+/* experimental image design */
 .hexagon {
     width: 100px; /* Adjust as needed */
     height: 100px; /* Adjust as needed */
@@ -162,9 +163,9 @@ body {
     clip-path: circle(40%);
     background: silver; /* Border color */
 }
+/* experimental image design end */
 
 .hoverable-element {
-    /* Your regular styles here (size, color, etc.) */
     transition: border 0.3s ease; /* Optional: for smooth transition */
 }
 

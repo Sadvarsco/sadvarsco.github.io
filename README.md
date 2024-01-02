@@ -1,4 +1,5 @@
-# sadvarsco.github.io Made because I was quite confused which heroes were available for picking.
+# sadvarsco.github.io 
+Made because I was quite confused which heroes were available for picking.
 Quick Simple Metamadness selection screen to help see who is and isnt available for hero selection. 
 How does it work. 
 The first 20 heroes selected will be considered 'Pre-banned'. Those heroes will then be grayed out.
