@@ -4,7 +4,7 @@ document.querySelectorAll('.character').forEach((char, index) => {
 });
 
 let selectedCharacters = [];
-let grayOutLimit = 10; // Default value
+let grayOutLimit = 1; // Default value
 
 function updateGrayOutCount() {
     grayOutLimit = parseInt(document.getElementById('grayOutCount').value);
