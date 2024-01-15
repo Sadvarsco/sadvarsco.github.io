@@ -46,6 +46,29 @@ function selectCharacter(characterId) {
     }
 }
 
+
+//Pop up box instructions
+function openModal() {
+    document.getElementById('infoModal').style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('infoModal').style.display = 'none';
+}
+
+//create a dropdown list, currently 20 is the max
+function populateDropdown() {
+    const dropdown = document.getElementById('grayOutCount');
+    for (let i = 1; i <= 22; i++) {
+        const option = document.createElement('option');
+        option.value = option.textContent = i;
+        dropdown.appendChild(option);
+    }
+}
+
+//populates dropdown list on page load
+populateDropdown();
+
 function resetSelection() {
     // Clear the selectedCharacters array
     selectedCharacters = [];
@@ -76,27 +99,3 @@ function sortCharacters() {
     // Re-append characters in sorted order
     characters.forEach(char => container.appendChild(char));
 }
-
-//Pop up box instructions
-function openModal() {
-    document.getElementById('infoModal').style.display = 'block';
-}
-
-function closeModal() {
-    document.getElementById('infoModal').style.display = 'none';
-}
-
-//create a dropdown list, currently 20 is the max
-function populateDropdown() {
-    const dropdown = document.getElementById('grayOutCount');
-    for (let i = 1; i <= 20; i++) {
-        const option = document.createElement('option');
-        option.value = option.textContent = i;
-        dropdown.appendChild(option);
-    }
-}
-
-//populates dropdown list on page load
-populateDropdown();
-
-
