@@ -56,10 +56,10 @@ function closeModal() {
     document.getElementById('infoModal').style.display = 'none';
 }
 
-//create a dropdown list, currently 20 is the max
+//create a dropdown list, currently 23 is the max
 function populateDropdown() {
     const dropdown = document.getElementById('grayOutCount');
-    for (let i = 1; i <= 22; i++) {
+    for (let i = 1; i <= 23; i++) {
         const option = document.createElement('option');
         option.value = option.textContent = i;
         dropdown.appendChild(option);
