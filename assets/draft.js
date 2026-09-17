@@ -19,8 +19,79 @@ function defaultState() {
     seriesBans: [],               // [{ hero, team }]
     games: [newGame(1)],
     gameIdx: 0,
-    overlay: { view: "strip", scale: 1, showRoles: true },
+    overlay: defaultOverlay(),
     history: [],                  // snapshots for undo
+  };
+}
+
+// --- Overlay layout ----------------------------------------------------------
+// Every measurement is a PERCENTAGE of the 16:9 frame, so one config works at
+// 1080p, 1440p or 720p. Margins carve out the space the streamer's own overlay
+// already occupies; the camera cutout is the hole their facecam sits in.
+var LAYOUT_PRESETS = {
+  khaldor: {
+    label: "Khaldor",
+    note: "Clears the hero columns, the map banner and the Patreon ticker.",
+    top: 18, right: 16, bottom: 6.5, left: 16,
+    cam: true, camX: 50, camW: 26,
+    rows: 3, pmax: 44, outRows: 2, outPmax: 30,
+  },
+  full: {
+    label: "Full frame",
+    note: "No existing overlay to dodge — uses the whole width.",
+    top: 4, right: 3, bottom: 4, left: 3,
+    cam: false, camX: 50, camW: 26,
+    rows: 3, pmax: 44, outRows: 2, outPmax: 30,
+  },
+  facecam: {
+    label: "Centre facecam",
+    note: "Plain scene with a talking head in the middle.",
+    top: 8, right: 5, bottom: 5, left: 5,
+    cam: true, camX: 50, camW: 24,
+    rows: 3, pmax: 44, outRows: 2, outPmax: 30,
+  },
+};
+
+var LAYOUT_KEYS = ["top", "right", "bottom", "left", "cam", "camX", "camW",
+                   "rows", "pmax", "outRows", "outPmax"];
+
+function layoutFromPreset(name) {
+  var src = LAYOUT_PRESETS[name] || LAYOUT_PRESETS.khaldor;
+  var out = { preset: LAYOUT_PRESETS[name] ? name : "khaldor" };
+  LAYOUT_KEYS.forEach(function (k) { out[k] = src[k]; });
+  return out;
+}
+
+function defaultOverlay() {
+  return {
+    view: "strip",
+    scale: 1,
+    showRoles: true,
+    showAvailable: true,
+    showOut: true,
+    avSort: "role",             // "role" | "name"
+    layout: layoutFromPreset("khaldor"),
+  };
+}
+
+// Where the band's two segments sit, as percentages of the BAND's own width.
+// With the camera cutout off it collapses to a single full-width segment.
+function bandSegments(L) {
+  var bandLeft = L.left;
+  var bandRight = 100 - L.right;
+  var bandW = Math.max(1, bandRight - bandLeft);
+  if (!L.cam) return { left: 100, gap: 0, right: 0, bandW: bandW };
+
+  var camL = L.camX - L.camW / 2;
+  var camR = L.camX + L.camW / 2;
+  var segL = Math.max(0, Math.min(camL, bandRight) - bandLeft);
+  var segR = Math.max(0, bandRight - Math.max(camR, bandLeft));
+  var gap = Math.max(0, bandW - segL - segR);
+  return {
+    left: (segL / bandW) * 100,
+    gap: (gap / bandW) * 100,
+    right: (segR / bandW) * 100,
+    bandW: bandW,
   };
 }
 
@@ -239,6 +310,17 @@ var bus = (function () {
       var parsed = JSON.parse(raw);
       if (parsed.v !== 2) return defaultState();
       parsed.history = parsed.history || [];
+      // States saved before the layout system existed get the defaults.
+      var base = defaultOverlay();
+      parsed.overlay = parsed.overlay || base;
+      Object.keys(base).forEach(function (k) {
+        if (parsed.overlay[k] === undefined) parsed.overlay[k] = base[k];
+      });
+      var dl = base.layout;
+      parsed.overlay.layout = parsed.overlay.layout || dl;
+      Object.keys(dl).forEach(function (k) {
+        if (parsed.overlay.layout[k] === undefined) parsed.overlay.layout[k] = dl[k];
+      });
       return parsed;
     } catch (e) {
       return defaultState();

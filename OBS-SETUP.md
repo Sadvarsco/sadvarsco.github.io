@@ -52,6 +52,39 @@ immediately. If it doesn't, the two are in different browsers — see step 2.
 
 ---
 
+## Fitting it around your own overlay
+
+Most streams already have furniture on screen — hero columns, a map banner, a ticker, a
+facecam. The overlay has a **layout** that keeps it clear of all of that.
+
+In the control panel hit **Fit to my stream…**. You get three presets and a live preview:
+
+| Preset | For |
+|---|---|
+| **Khaldor** (default) | Clears his side hero columns, the map banner and the Patreon ticker, and splits around his camera |
+| **Full frame** | No existing overlay to dodge — uses the whole width |
+| **Centre facecam** | A plain scene with a talking head in the middle |
+
+Then drag the sliders until the band sits in your empty space:
+
+- **Keep clear of** — how much of the top / bottom / left / right to stay out of, as a
+  percentage, so one setting works at 1080p, 1440p or 720p.
+- **Facecam gap** — splits the band into two blocks with a hole in the middle. Set the
+  centre and width to match where you sit. Turn it off for one full-width block.
+- **Density** — how many rows of available heroes, and how big the portraits get. Portraits
+  shrink automatically when they need to; these are the ceilings.
+- **Show** — turn off the available band, the out-of-pool band, or the role counts.
+
+The preview is the real overlay running in an iframe, so what you see is what OBS renders.
+
+### Sharing a layout
+
+**Copy overlay URL with this layout** gives you a link with the whole configuration baked
+into it. Paste that straight into someone else's OBS Browser Source and they get your exact
+setup without touching the panel. Handy for handing a caster a ready-made source.
+
+---
+
 ## Overlay URL options
 
 Append these to `overlay.html`:
@@ -65,6 +98,7 @@ Append these to `overlay.html`:
 | `?scale=1.25` | Scale the whole overlay up (or down: `0.8`) |
 | `?roles=0` | Hide the "11 Tank / 15 Bruiser / …" breakdown |
 | `?demo=1` | Sample data for framing the source |
+| `?cfg=…` | A packed layout, as produced by **Copy overlay URL with this layout** |
 
 Combine with `&`, e.g. `overlay.html?view=strip&pos=top&scale=0.9`.
 
@@ -78,10 +112,16 @@ Otherwise, leave the URL plain and use the **Strip / Grid / Hide** buttons in th
 
 ## The two views
 
-**Strip** — a ~166px bar. Heroes left, the mode and map, the role breakdown, then every dead
-hero grouped as *Auto-banned · Series bans · Already played · Banned this game*, and who's on
-the clock. Portraits shrink automatically as the series goes on, so game 5 of a Bo5 still
-fits. Safe to leave up during gameplay.
+**Strip** — a band above your bottom furniture, in two lanes:
+
+- **Still available** — every hero nobody has taken yet, ringed by role, with the role
+  counts beside them. This is the one people actually want: it answers "what's left?"
+  without anyone doing arithmetic.
+- **Out of the pool** — everything gone, dimmed, with a colour key for why (auto ban,
+  series ban, already played, banned this game).
+
+Both lanes split around your facecam. Portraits auto-size to fit whatever space you gave
+them, so the band keeps its height whether 80 heroes are open or 14.
 
 **Grid** — the full 90-hero roster. Available heroes in colour, everything else dimmed with a
 coloured ring showing why. Covers most of the frame; use it during the draft.

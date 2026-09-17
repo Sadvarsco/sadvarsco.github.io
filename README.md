@@ -49,9 +49,19 @@ games left is the thing people lose track of.
 
 ## On stream
 
+The overlay has two lanes: **still available** (ringed by role, with role counts) and **out
+of the pool** (dimmed, colour-keyed by why). Both split around your facecam so they sit
+either side of you rather than over you.
+
+**Fit to my stream…** in the panel positions it around whatever overlay you already run —
+three presets (Khaldor is the default), sliders for every margin and the camera gap, and a
+live preview. Portraits auto-size to fill the space you give them.
+
 See **[OBS-SETUP.md](OBS-SETUP.md)**. Short version: `overlay.html` goes in a **Browser
 Source**, and `index.html` goes in a **Custom Browser Dock** *inside OBS*. They have to be in
-the same browser to stay in sync — that's the one gotcha.
+the same browser to stay in sync — that's the one gotcha. To hand someone a ready-made
+source, use **Copy overlay URL with this layout**, which packs the whole configuration into
+the link.
 
 ## Notes
 

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Meta Madness &mdash; Draft Control</title>
-<link rel="stylesheet" href="assets/panel.css?v=1">
+<link rel="stylesheet" href="assets/panel.css?v=5">
 </head>
 <body>
 
@@ -74,6 +74,7 @@
       <button class="view-btn" data-view="strip">Strip</button>
       <button class="view-btn" data-view="grid">Grid</button>
       <button class="view-btn" data-view="hidden">Hide</button>
+      <button id="layoutBtn" class="primary">Fit to my stream&hellip;</button>
       <button id="openOverlay" class="ghost">Open overlay</button>
       <button id="copyOverlay" class="ghost">Copy URL</button>
     </div>
@@ -127,6 +128,88 @@
 
 <main class="grid" id="grid"></main>
 
+<div id="layoutModal" class="modal" hidden>
+  <div class="modal-content wide">
+    <button class="close-button" id="closeLayout" aria-label="Close">&times;</button>
+    <h2>Fit the overlay to your stream</h2>
+    <p class="lead">Drag the numbers until the green band sits in the empty space on your
+      layout. The preview below is the real overlay, live.</p>
+
+    <div class="layout-presets" id="layoutPresets"></div>
+
+    <div class="layout-editor">
+      <div class="layout-preview-wrap">
+        <div class="layout-preview" id="layoutPreview">
+          <iframe id="previewFrame" src="overlay.html?v=5" title="Overlay preview"
+                  scrolling="no" tabindex="-1"></iframe>
+          <div class="guide guide-top"></div>
+          <div class="guide guide-bottom"></div>
+          <div class="guide guide-left"></div>
+          <div class="guide guide-right"></div>
+          <div class="guide guide-cam" id="guideCam"><span>facecam</span></div>
+        </div>
+        <label class="toggle preview-toggle">
+          <input type="checkbox" id="showGuides" checked>
+          <span>Show the safe-area guides</span>
+        </label>
+      </div>
+
+      <div class="layout-fields">
+        <fieldset>
+          <legend>Keep clear of&hellip;</legend>
+          <label class="field"><span>Top <em id="vTop"></em></span>
+            <input type="range" id="fTop" min="0" max="45" step="0.5"></label>
+          <label class="field"><span>Bottom <em id="vBottom"></em></span>
+            <input type="range" id="fBottom" min="0" max="45" step="0.5"></label>
+          <label class="field"><span>Left <em id="vLeft"></em></span>
+            <input type="range" id="fLeft" min="0" max="40" step="0.5"></label>
+          <label class="field"><span>Right <em id="vRight"></em></span>
+            <input type="range" id="fRight" min="0" max="40" step="0.5"></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Facecam gap</legend>
+          <label class="toggle"><input type="checkbox" id="fCam">
+            <span>Split the band around a camera</span></label>
+          <label class="field"><span>Centre <em id="vCamX"></em></span>
+            <input type="range" id="fCamX" min="10" max="90" step="0.5"></label>
+          <label class="field"><span>Width <em id="vCamW"></em></span>
+            <input type="range" id="fCamW" min="0" max="60" step="0.5"></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Density</legend>
+          <label class="field"><span>Available rows <em id="vRows"></em></span>
+            <input type="range" id="fRows" min="1" max="6" step="1"></label>
+          <label class="field"><span>Portrait size <em id="vPmax"></em></span>
+            <input type="range" id="fPmax" min="22" max="64" step="1"></label>
+          <label class="field"><span>Overall scale <em id="vScale"></em></span>
+            <input type="range" id="fScale" min="0.6" max="1.6" step="0.05"></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Show</legend>
+          <label class="toggle"><input type="checkbox" id="fShowAvailable">
+            <span>Heroes still available</span></label>
+          <label class="toggle"><input type="checkbox" id="fShowOut">
+            <span>Heroes out of the pool</span></label>
+          <label class="toggle"><input type="checkbox" id="fShowRoles">
+            <span>Role counts</span></label>
+          <label class="toggle"><input type="checkbox" id="fSortRole">
+            <span>Group available by role</span></label>
+        </fieldset>
+
+        <div class="layout-actions">
+          <button id="copyCfgUrl" class="primary">Copy overlay URL with this layout</button>
+          <button id="resetLayout" class="ghost">Reset to preset</button>
+        </div>
+        <p class="control-note">The copied URL carries the layout with it, so you can paste it
+          straight into someone else&rsquo;s OBS without setting anything up.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="helpModal" class="modal" hidden>
   <div class="modal-content">
     <button class="close-button" id="closeHelp" aria-label="Close">&times;</button>
@@ -166,8 +249,8 @@
   </div>
 </div>
 
-<script src="assets/heroes.js?v=1"></script>
-<script src="assets/draft.js?v=1"></script>
-<script src="assets/panel.js?v=1"></script>
+<script src="assets/heroes.js?v=5"></script>
+<script src="assets/draft.js?v=5"></script>
+<script src="assets/panel.js?v=5"></script>
 </body>
 </html>

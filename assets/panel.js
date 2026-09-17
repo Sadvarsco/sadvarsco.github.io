@@ -220,6 +220,7 @@ function renderChrome() {
 function render() {
   var t = tally(state);
   renderChrome();
+  if (!$("layoutModal").hidden) syncLayoutUI();
   renderStatus();
   renderScores(t);
   renderMaps();
@@ -351,7 +352,12 @@ function wire() {
 
   document.addEventListener("keydown", function (e) {
     if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
-    if (e.key === "Escape") { $("helpModal").hidden = true; override = null; render(); }
+    if (e.key === "Escape") {
+      $("helpModal").hidden = true;
+      $("layoutModal").hidden = true;
+      override = null;
+      render();
+    }
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
       e.preventDefault();
       if (undo(state)) commit();
@@ -373,3 +379,173 @@ buildGrid();
 buildMaps();
 wire();
 render();
+
+// --- Layout editor ----------------------------------------------------------
+// Positions the overlay band around whatever the streamer already has on screen.
+// The preview is the real overlay in an iframe, so it stays in sync for free.
+
+var FIELDS = [
+  ["fTop", "top", "vTop", "%"], ["fBottom", "bottom", "vBottom", "%"],
+  ["fLeft", "left", "vLeft", "%"], ["fRight", "right", "vRight", "%"],
+  ["fCamX", "camX", "vCamX", "%"], ["fCamW", "camW", "vCamW", "%"],
+  ["fRows", "rows", "vRows", ""], ["fPmax", "pmax", "vPmax", "px"],
+];
+var CHECKS = [
+  ["fShowAvailable", "showAvailable"], ["fShowOut", "showOut"], ["fShowRoles", "showRoles"],
+];
+
+function layout() { return state.overlay.layout; }
+
+function buildPresets() {
+  var box = $("layoutPresets");
+  Object.keys(LAYOUT_PRESETS).forEach(function (key) {
+    var p = LAYOUT_PRESETS[key];
+    var b = document.createElement("button");
+    b.className = "preset-btn";
+    b.dataset.preset = key;
+    b.innerHTML = p.label + "<small>" + p.note + "</small>";
+    b.addEventListener("click", function () {
+      pushHistory(state);
+      state.overlay.layout = layoutFromPreset(key);
+      commit();
+      syncLayoutUI();
+    });
+    box.appendChild(b);
+  });
+}
+
+// Scale the 1920x1080 iframe down to whatever width the preview box has.
+function sizePreview() {
+  var box = $("layoutPreview");
+  if (!box) return;
+  var w = box.clientWidth;
+  if (!w) return;
+  $("previewFrame").style.transform = "scale(" + (w / 1920) + ")";
+}
+
+function syncLayoutUI() {
+  var L = layout();
+  var o = state.overlay;
+
+  FIELDS.forEach(function (f) {
+    var el = $(f[0]);
+    if (el && el !== document.activeElement) el.value = L[f[1]];
+    $(f[2]).textContent = L[f[1]] + f[3];
+  });
+  $("fCam").checked = !!L.cam;
+  $("fScale").value = o.scale;
+  $("vScale").textContent = Math.round(o.scale * 100) + "%";
+  CHECKS.forEach(function (c) { $(c[0]).checked = o[c[1]] !== false; });
+  $("fSortRole").checked = o.avSort === "role";
+
+  Array.prototype.forEach.call(document.querySelectorAll(".preset-btn"), function (b) {
+    b.classList.toggle("active", b.dataset.preset === L.preset);
+  });
+
+  // Guides mirror the same percentages the overlay uses.
+  $("layoutPreview").querySelector(".guide-top").style.height = L.top + "%";
+  $("layoutPreview").querySelector(".guide-bottom").style.height = L.bottom + "%";
+  $("layoutPreview").querySelector(".guide-bottom").style.bottom = "0";
+  $("layoutPreview").querySelector(".guide-left").style.width = L.left + "%";
+  $("layoutPreview").querySelector(".guide-right").style.width = L.right + "%";
+  $("layoutPreview").querySelector(".guide-right").style.right = "0";
+  var cam = $("guideCam");
+  cam.classList.toggle("off", !L.cam);
+  cam.style.left = (L.camX - L.camW / 2) + "%";
+  cam.style.width = L.camW + "%";
+  sizePreview();
+}
+
+// Any hand edit means this is no longer a stock preset.
+function markCustom() {
+  var L = layout();
+  var stock = Object.keys(LAYOUT_PRESETS).some(function (k) {
+    var ref = LAYOUT_PRESETS[k];
+    return LAYOUT_KEYS.every(function (key) { return ref[key] === L[key]; });
+  });
+  L.preset = stock ? L.preset : "custom";
+}
+
+function wireLayout() {
+  buildPresets();
+
+  FIELDS.forEach(function (f) {
+    $(f[0]).addEventListener("input", function (e) {
+      var v = parseFloat(e.target.value);
+      layout()[f[1]] = f[1] === "rows" || f[1] === "pmax" ? Math.round(v) : v;
+      markCustom();
+      commit();
+      syncLayoutUI();
+    });
+  });
+
+  $("fCam").addEventListener("change", function (e) {
+    layout().cam = e.target.checked;
+    markCustom();
+    commit();
+    syncLayoutUI();
+  });
+
+  $("fScale").addEventListener("input", function (e) {
+    state.overlay.scale = parseFloat(e.target.value);
+    commit();
+    syncLayoutUI();
+  });
+
+  CHECKS.forEach(function (c) {
+    $(c[0]).addEventListener("change", function (e) {
+      state.overlay[c[1]] = e.target.checked;
+      commit();
+    });
+  });
+
+  $("fSortRole").addEventListener("change", function (e) {
+    state.overlay.avSort = e.target.checked ? "role" : "name";
+    commit();
+  });
+
+  $("showGuides").addEventListener("change", function (e) {
+    $("layoutPreview").classList.toggle("no-guides", !e.target.checked);
+  });
+
+  $("resetLayout").addEventListener("click", function () {
+    var key = LAYOUT_PRESETS[layout().preset] ? layout().preset : "khaldor";
+    pushHistory(state);
+    state.overlay.layout = layoutFromPreset(key);
+    commit();
+    syncLayoutUI();
+  });
+
+  $("copyCfgUrl").addEventListener("click", function () {
+    var packed = btoa(unescape(encodeURIComponent(JSON.stringify(layout()))))
+      .replace(/\+/g, "-").replace(/\//g, "_");
+    var url = new URL("overlay.html", location.href);
+    url.searchParams.set("cfg", packed);
+    copyText(url.href, "Overlay URL with your layout copied.");
+  });
+
+  $("layoutBtn").addEventListener("click", function () {
+    $("layoutModal").hidden = false;
+    syncLayoutUI();
+  });
+  $("closeLayout").addEventListener("click", function () { $("layoutModal").hidden = true; });
+  $("layoutModal").addEventListener("click", function (e) {
+    if (e.target === $("layoutModal")) $("layoutModal").hidden = true;
+  });
+
+  window.addEventListener("resize", sizePreview);
+}
+
+function copyText(text, msg) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(
+      function () { toast(msg); },
+      function () { prompt("Copy this:", text); }
+    );
+  } else {
+    prompt("Copy this:", text);
+  }
+}
+
+wireLayout();
+syncLayoutUI();
