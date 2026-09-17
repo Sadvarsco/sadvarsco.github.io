@@ -1,0 +1,261 @@
+/* OBS stream overlay. Transparent background, heavy contrast so it survives
+   being composited over gameplay and then re-encoded by Twitch. */
+
+:root {
+  --team-a: #4aa8ff;
+  --team-b: #ff6a5e;
+  --gold: #ffcf5c;
+  --series: #b98cff;
+  --gameban: #ffa64d;
+  --ok: #5ce894;
+  --ink: #f2f6ff;
+  --scrim: rgba(8, 11, 18, .82);
+  --scrim-2: rgba(8, 11, 18, .62);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: transparent;   /* OBS Browser Source composites over this */
+  overflow: hidden;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  transform-origin: top left;
+  pointer-events: none;      /* never steal clicks from OBS interact mode */
+}
+.overlay.hidden { display: none; }
+
+/* Shared chrome ------------------------------------------------------------ */
+.o-title {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: .85;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+}
+
+.portrait {
+  position: relative;
+  flex: 0 0 auto;
+}
+.portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  filter: grayscale(1) brightness(.5);
+}
+.portrait.is-used img { filter: grayscale(.6) brightness(.62); }
+.portrait::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+}
+.portrait .pg {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  min-width: 17px;
+  height: 17px;
+  border-radius: 9px;
+  background: currentColor;
+  color: #0a0d14;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 17px;
+  text-align: center;
+  padding: 0 3px;
+}
+
+.c-global   { color: #8592b0; }
+.c-series   { color: var(--series); }
+.c-gameban  { color: var(--gameban); }
+.c-used-A   { color: var(--team-a); }
+.c-used-B   { color: var(--team-b); }
+
+/* --- Strip view ----------------------------------------------------------- */
+.strip {
+  position: absolute;
+  left: 0; right: 0;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  background: linear-gradient(180deg, var(--scrim-2), var(--scrim));
+  border-top: 3px solid var(--gold);
+  box-shadow: 0 -8px 30px rgba(0,0,0,.45);
+}
+.strip.pos-bottom { bottom: 0; }
+.strip.pos-top { top: 0; border-top: none; border-bottom: 3px solid var(--gold); }
+
+.strip-left {
+  flex: 0 0 auto;
+  padding: 12px 22px 12px 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  border-right: 1px solid rgba(255,255,255,.12);
+  min-width: 210px;
+  max-width: 330px;           /* stop the role list from stretching the bar */
+}
+.count-big {
+  font-size: 46px;
+  font-weight: 800;
+  line-height: .95;
+  color: var(--ok);
+  letter-spacing: -1px;
+}
+.count-label { font-size: 13px; letter-spacing: 2.4px; text-transform: uppercase; opacity: .8; }
+.strip-meta { font-size: 13px; opacity: .78; margin-top: 3px; }
+.strip-meta b { color: var(--gold); }
+
+.roles {
+  display: flex;
+  gap: 3px 10px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+}
+.role {
+  font-size: 11px;
+  letter-spacing: .4px;
+  opacity: .85;
+  white-space: nowrap;
+}
+.role b { font-size: 14px; color: var(--ink); }
+.role.low b { color: var(--gameban); }
+.role.out b { color: var(--team-b); }
+
+.strip-body {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;          /* never let groups stack -- the bar is fixed height */
+  gap: 18px;
+  padding: 10px 24px;
+  overflow: hidden;
+}
+
+.group { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.group-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: .82;
+}
+.group-head .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.group-row {
+  display: flex;
+  flex-flow: column wrap;
+  align-content: flex-start;
+  gap: 5px;
+  height: 89px;               /* 2 rows of 42 + gap */
+}
+.group-row .portrait { width: 42px; height: 42px; }
+
+/* Density steps -- a game 5 draft has ~66 dead heroes to show, so shrink the
+   portraits rather than letting the bar overflow. Applied by overlay.js. */
+.strip.d-2 .group-row { height: 73px; }
+.strip.d-2 .group-row .portrait { width: 34px; height: 34px; }
+.strip.d-2 .portrait .pg { min-width: 15px; height: 15px; line-height: 15px; font-size: 10px; }
+
+/* Deep into a Bo5 there are ~76 dead heroes, so go to three rows rather than
+   letting the far end of the bar get clipped. */
+.strip.d-3 .group-row { height: 92px; gap: 4px; }
+.strip.d-3 .strip-body, .strip.d-3 .group-row { }
+.strip.d-3 .group-row .portrait { width: 28px; height: 28px; }
+.strip.d-3 .portrait .pg { min-width: 13px; height: 13px; line-height: 13px; font-size: 9px; }
+.strip.d-3 .group-head { font-size: 10px; letter-spacing: 1.4px; }
+.strip.d-3 .strip-body { gap: 12px; }
+
+.strip-right {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 26px 12px 20px;
+  border-left: 1px solid rgba(255,255,255,.12);
+  text-align: right;
+}
+.turn-label { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; opacity: .7; }
+.turn-team { font-size: 24px; font-weight: 800; line-height: 1.1; }
+.turn-team.t-A { color: var(--team-a); }
+.turn-team.t-B { color: var(--team-b); }
+.turn-action { font-size: 15px; font-weight: 800; letter-spacing: 2px; }
+.turn-action.ban { color: var(--team-b); }
+.turn-action.pick { color: var(--ok); }
+
+/* --- Grid view ------------------------------------------------------------ */
+.gridview {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 26px 34px;
+  background: linear-gradient(180deg, rgba(8,11,18,.90), rgba(8,11,18,.78));
+}
+.gv-head {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--gold);
+}
+.gv-head .count-big { font-size: 46px; }
+.gv-title { font-size: 26px; font-weight: 800; letter-spacing: 1px; }
+.gv-sub { font-size: 14px; opacity: .75; }
+.gv-spacer { flex: 1; }
+
+.gv-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  gap: 9px;
+  align-content: start;
+  overflow: hidden;
+}
+.gv-cell { text-align: center; }
+.gv-cell .portrait { width: 58px; height: 58px; margin: 0 auto 4px; }
+.gv-cell .gv-name {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.15;
+  opacity: .55;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gv-cell.avail .portrait img { filter: none; }
+.gv-cell.avail .portrait { color: var(--ok); }
+.gv-cell.avail .gv-name { opacity: 1; }
+
+.legend { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; opacity: .85; }
+.legend-item .dot { width: 10px; height: 10px; border-radius: 50%; background: currentColor; }
